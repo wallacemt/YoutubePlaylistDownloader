@@ -330,12 +330,12 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                     }
                     var cleanFileNameWithID = GlobalConsts.CleanFileName(video.Title + video.Id);
                     var cleanFileName = GlobalConsts.CleanFileName(downloadSettings.GetFilenameByPattern(video, i, title, Playlist));
-                    var fileLoc = $"{GlobalConsts.TempFolderPath}{cleanFileNameWithID}";
+                    var fileLoc = $"{GlobalConsts.TempFolderPath}{cleanFileNameWithID}.part";
 
                     if (AudioOnly)
                         FileType = bestQuality.Container.Name;
 
-                    var outputFileLoc = $"{GlobalConsts.TempFolderPath}{cleanFileNameWithID}.{FileType}";
+                    var outputFileLoc = $"{GlobalConsts.TempFolderPath}{cleanFileNameWithID}.part.{FileType}";
                     var copyFileLoc = $"{SavePath}\\{cleanFileName}.{FileType}";
 
                     if (GlobalConsts.DownloadSettings.SkipExisting && File.Exists(copyFileLoc))
@@ -462,7 +462,7 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                                 var copyFileLocCounter = 1;
                                 while (File.Exists(copyFileLoc))
                                     copyFileLoc = $"{SavePath}\\{cleanFileName}-{copyFileLocCounter++}.{FileType}";
-                                File.Copy(outputFileLoc, copyFileLoc, true);
+                                AtomicFile.CopyAndReplace(outputFileLoc, copyFileLoc);
                                 File.Delete(outputFileLoc);
                             }
                             catch (Exception ex)
@@ -473,13 +473,15 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                             {
                                 if (lockTaken) GlobalConsts.ConversionsLocker.Release();
                                 convertingCount--;
+                                File.Delete(fileLoc);
+                                File.Delete(outputFileLoc);
                             }
                         }
                         conversionTasks.Add(ConvertAsync());
                     }
                     else
                     {
-                        File.Copy(fileLoc, copyFileLoc, true);
+                        AtomicFile.CopyAndReplace(fileLoc, copyFileLoc);
 
                         File.Delete(fileLoc);
                         try
@@ -665,11 +667,11 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                 }
                 var cleanVideoNameWithId = GlobalConsts.CleanFileName(video.Title + video.Id);
                 var cleanVideoName = GlobalConsts.CleanFileName(downloadSettings.GetFilenameByPattern(video, i, title, Playlist));
-                var fileLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}";
-                var outputFileLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}.{VideoSaveFormat}";
+                var fileLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}.part";
+                var outputFileLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}.part.{VideoSaveFormat}";
                 var copyFileLoc = $"{SavePath}\\{cleanVideoName}.{VideoSaveFormat}";
-                var audioLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}-audio.{bestAudio.Container.Name}";
-                var captionsLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}.srt";
+                var audioLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}-audio.{bestAudio.Container.Name}.part";
+                var captionsLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}.srt.part";
 
                 if (GlobalConsts.DownloadSettings.SkipExisting && File.Exists(copyFileLoc))
                 {
@@ -774,7 +776,7 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                             if (VideoSaveFormat != "mkv")
                             {
                                 ffmpegArguments = $"-i \"{fileLoc}\" -i \"{audioLoc}\" -y -c copy \"{outputFileLoc}\"";
-                                File.Copy(captionsLoc, $"{SavePath}\\{cleanVideoName}.srt");
+                                AtomicFile.CopyAndReplace(captionsLoc, $"{SavePath}\\{cleanVideoName}.srt");
                             }
                             else
                             {
@@ -831,6 +833,10 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                     {
                         if (lockTaken) GlobalConsts.ConversionsLocker.Release();
                         convertingCount--;
+                        File.Delete(fileLoc);
+                        File.Delete(outputFileLoc);
+                        File.Delete(audioLoc);
+                        File.Delete(captionsLoc);
                     }
                 }
                 conversionTasks.Add(ConvertAsync());

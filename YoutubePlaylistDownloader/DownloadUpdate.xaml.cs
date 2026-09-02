@@ -126,6 +126,10 @@ public partial class DownloadUpdate : UserControl, IDownload
 
             using var response = await httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationTokenSource.Token);
             response.EnsureSuccessStatusCode();
+            var finalUri = response.RequestMessage?.RequestUri;
+            if (finalUri is null || finalUri.Scheme != Uri.UriSchemeHttps ||
+                (finalUri.Host != "github.com" && finalUri.Host != "objects.githubusercontent.com"))
+                throw new InvalidDataException("The update URL redirected to an untrusted host.");
             await Dispatcher.InvokeAsync(() => CurrentDownloadProgressBar.Maximum = response.Content.Headers.ContentLength ?? 0);
 
             await using (var file = new ProgressStream(new FileStream(partialPath, FileMode.Create, FileAccess.Write, FileShare.None)))
@@ -134,8 +138,15 @@ public partial class DownloadUpdate : UserControl, IDownload
                 await response.Content.CopyToAsync(file, cancellationTokenSource.Token);
             }
 
-            if (!File.Exists(partialPath) || new FileInfo(partialPath).Length == 0)
+            if (!File.Exists(partialPath) || new FileInfo(partialPath).Length < 2)
                 throw new InvalidDataException("The downloaded update is empty.");
+
+            await using (var header = File.OpenRead(partialPath))
+            {
+                var signature = new byte[2];
+                if (await header.ReadAsync(signature, cancellationTokenSource.Token) != 2 || signature[0] != 'M' || signature[1] != 'Z')
+                    throw new InvalidDataException("The downloaded update is not a Windows executable.");
+            }
 
             File.Move(partialPath, updatePath, true);
             var completed = new AsyncCompletedEventArgs(null, false, null);
@@ -146,7 +157,7 @@ public partial class DownloadUpdate : UserControl, IDownload
         }
         catch (OperationCanceledException)
         {
-            try { if (File.Exists(partialPath)) File.Delete(partialPath); } catch { }
+            await CleanupPartialFile(partialPath);
             var cancelled = new AsyncCompletedEventArgs(null, true, null);
             if (GlobalConsts.UpdateLater)
                 await DownloadCompletedLater(this, cancelled);
@@ -155,12 +166,27 @@ public partial class DownloadUpdate : UserControl, IDownload
         }
         catch (Exception ex)
         {
-            try { if (File.Exists(partialPath)) File.Delete(partialPath); } catch { }
+            await CleanupPartialFile(partialPath);
             var failed = new AsyncCompletedEventArgs(ex, false, null);
             if (GlobalConsts.UpdateLater)
                 await DownloadCompletedLater(this, failed);
             else
                 await DownloadFileCompleted(this, failed);
+        }
+    }
+
+    private static async Task CleanupPartialFile(string partialPath)
+    {
+        if (!File.Exists(partialPath))
+            return;
+
+        try
+        {
+            File.Delete(partialPath);
+        }
+        catch (Exception ex)
+        {
+            await GlobalConsts.Log(ex.ToString(), "DownloadUpdate cleanup partial file");
         }
     }
 

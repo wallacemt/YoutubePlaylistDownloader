@@ -21,3 +21,5 @@ jobs:
         run: dotnet restore YoutubePlaylistDownloader.sln
       - name: Build
         run: dotnet build YoutubePlaylistDownloader.sln --configuration Release --no-restore
+      - name: Test
+        run: dotnet test YoutubePlaylistDownloader.sln --configuration Release --no-build

@@ -62,7 +62,7 @@ public partial class MainPage : UserControl
 
             if (YoutubeHelpers.TryParsePlaylistId(url, out var playlistId))
             {
-                var basePlaylist = await client.Playlists.GetAsync(playlistId.Value, token);
+                var basePlaylist = await client.Playlists.GetAsync(playlistId.Value, cancellationToken: token);
                 var videos = await client.Playlists.GetVideosAsync(basePlaylist.Id).CollectAsync(token);
                 token.ThrowIfCancellationRequested();
                 list = new FullPlaylist(basePlaylist, videos);
@@ -71,21 +71,21 @@ public partial class MainPage : UserControl
             }
             else if (YoutubeHelpers.TryParseChannelId(url, out var channelId))
             {
-                channel = await client.Channels.GetAsync(channelId, token);
+                channel = await client.Channels.GetAsync(channelId, cancellationToken: token);
                 list = new FullPlaylist(null, null, channel.Title);
                 VideoList = await client.Channels.GetUploadsAsync(channel.Id).CollectAsync(token);
                 await UpdatePlaylistInfo(Visibility.Visible, channel.Title, totalVideos: VideoList.Count().ToString(), imageUrl: channel.Thumbnails.FirstOrDefault()?.Url, downloadEnabled: true, showIndexes: true);
             }
             else if (YoutubeHelpers.TryParseUsername(url, out var username))
             {
-                var userChannel = await client.Channels.GetByUserAsync(username, token);
+                var userChannel = await client.Channels.GetByUserAsync(username, cancellationToken: token);
                 list = new FullPlaylist(null, null, userChannel.Title);
                 VideoList = await client.Channels.GetUploadsAsync(userChannel.Id).CollectAsync(token);
                 await UpdatePlaylistInfo(Visibility.Visible, userChannel.Title, totalVideos: VideoList.Count().ToString(), imageUrl: userChannel.Thumbnails.FirstOrDefault()?.Url, downloadEnabled: true, showIndexes: true);
             }
             else if (YoutubeHelpers.TryParseHandle(url, out var handle))
             {
-                var handleChannel = await client.Channels.GetByHandleAsync(handle, token);
+                var handleChannel = await client.Channels.GetByHandleAsync(handle, cancellationToken: token);
                 list = new FullPlaylist(null, null, handleChannel.Title);
                 VideoList = await client.Channels.GetUploadsAsync(handleChannel.Id).CollectAsync(token);
                 await UpdatePlaylistInfo(Visibility.Visible, handleChannel.Title, totalVideos: VideoList.Count().ToString(), imageUrl: handleChannel.Thumbnails.FirstOrDefault()?.Url, downloadEnabled: true, showIndexes: true);

@@ -112,19 +112,56 @@ public partial class DownloadUpdate : UserControl, IDownload
 
     private async Task StartUpdate()
     {
-        await Dispatcher.InvokeAsync(() => HeadlineTextBlock.Text = $"{FindResource("DownloadingUpdateSetup")}");
-        using var fs = new ProgressStream(new FileStream(GlobalConsts.UpdateSetupLocation, FileMode.Create));
-        fs.BytesWritten += DownloadProgressChanged;
-        var latestVersionLink = await httpClient.GetAsync("https://raw.githubusercontent.com/shaked6540/YoutubePlaylistDownloader/master/YoutubePlaylistDownloader/latestVersionLink.txt").ConfigureAwait(false);
-        var response = await httpClient.GetAsync(await latestVersionLink.Content.ReadAsStringAsync().ConfigureAwait(false)).ConfigureAwait(false);
-        await Dispatcher.InvokeAsync(() => CurrentDownloadProgressBar.Maximum = response.Content.Headers.ContentLength ?? 0);
-        await response.Content.CopyToAsync(fs, cancellationTokenSource.Token).ContinueWith(async a =>
+        var updatePath = GlobalConsts.UpdateSetupLocation;
+        var partialPath = $"{updatePath}.part";
+        try
         {
+            await Dispatcher.InvokeAsync(() => HeadlineTextBlock.Text = $"{FindResource("DownloadingUpdateSetup")}");
+            var latestVersionLink = await httpClient.GetAsync("https://raw.githubusercontent.com/shaked6540/YoutubePlaylistDownloader/master/YoutubePlaylistDownloader/latestVersionLink.txt", cancellationTokenSource.Token);
+            latestVersionLink.EnsureSuccessStatusCode();
+            var downloadUrl = (await latestVersionLink.Content.ReadAsStringAsync(cancellationTokenSource.Token)).Trim();
+            if (!Uri.TryCreate(downloadUrl, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps ||
+                (uri.Host != "github.com" && uri.Host != "objects.githubusercontent.com"))
+                throw new InvalidDataException("The update URL is not a trusted GitHub HTTPS URL.");
+
+            using var response = await httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationTokenSource.Token);
+            response.EnsureSuccessStatusCode();
+            await Dispatcher.InvokeAsync(() => CurrentDownloadProgressBar.Maximum = response.Content.Headers.ContentLength ?? 0);
+
+            await using (var file = new ProgressStream(new FileStream(partialPath, FileMode.Create, FileAccess.Write, FileShare.None)))
+            {
+                file.BytesWritten += DownloadProgressChanged;
+                await response.Content.CopyToAsync(file, cancellationTokenSource.Token);
+            }
+
+            if (!File.Exists(partialPath) || new FileInfo(partialPath).Length == 0)
+                throw new InvalidDataException("The downloaded update is empty.");
+
+            File.Move(partialPath, updatePath, true);
+            var completed = new AsyncCompletedEventArgs(null, false, null);
             if (GlobalConsts.UpdateLater)
-                await DownloadCompletedLater(this, new AsyncCompletedEventArgs(null, a.IsCanceled, null));
+                await DownloadCompletedLater(this, completed);
             else
-                await DownloadFileCompleted(this, new AsyncCompletedEventArgs(null, a.IsCanceled, null));
-        });
+                await DownloadFileCompleted(this, completed);
+        }
+        catch (OperationCanceledException)
+        {
+            try { if (File.Exists(partialPath)) File.Delete(partialPath); } catch { }
+            var cancelled = new AsyncCompletedEventArgs(null, true, null);
+            if (GlobalConsts.UpdateLater)
+                await DownloadCompletedLater(this, cancelled);
+            else
+                await DownloadFileCompleted(this, cancelled);
+        }
+        catch (Exception ex)
+        {
+            try { if (File.Exists(partialPath)) File.Delete(partialPath); } catch { }
+            var failed = new AsyncCompletedEventArgs(ex, false, null);
+            if (GlobalConsts.UpdateLater)
+                await DownloadCompletedLater(this, failed);
+            else
+                await DownloadFileCompleted(this, failed);
+        }
     }
 
     private async void DownloadProgressChanged(object sender, ProgressStreamReportEventArgs args)

@@ -361,6 +361,7 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                         Stopwatch sw = new();
                         TimeSpan ts = new(0);
                         var seconds = 1;
+                        var lastProgressUpdate = TimeSpan.MinValue;
                         var downloadSpeedText = (string)FindResource("DownloadSpeed");
 
                         stream.BytesWritten += async (sender, args) =>
@@ -385,6 +386,10 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
 
                                 if (!sw.IsRunning)
                                     sw.Start();
+
+                                if (percent < 100 && sw.Elapsed - lastProgressUpdate < TimeSpan.FromMilliseconds(100))
+                                    return;
+                                lastProgressUpdate = sw.Elapsed;
 
                                 await Dispatcher.InvokeAsync(() =>
                                 {
@@ -698,6 +703,7 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                     Stopwatch sw = new();
                     TimeSpan ts = new(0);
                     var seconds = 1;
+                    var lastProgressUpdate = TimeSpan.MinValue;
                     var downloadSpeedText = (string)FindResource("DownloadSpeed");
 
                     stream.BytesWritten += async (sender, args) =>
@@ -721,6 +727,10 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                             }
                             if (!sw.IsRunning)
                                 sw.Start();
+
+                            if (percent < 100 && sw.Elapsed - lastProgressUpdate < TimeSpan.FromMilliseconds(100))
+                                return;
+                            lastProgressUpdate = sw.Elapsed;
 
                             await Dispatcher.InvokeAsync(() =>
                             {

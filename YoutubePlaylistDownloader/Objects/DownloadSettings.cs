@@ -4,6 +4,8 @@
 public class DownloadSettings
 {
     [JsonProperty]
+    public int SchemaVersion { get; set; } = 1;
+    [JsonProperty]
     public string SavePath { get; set; }
 
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]

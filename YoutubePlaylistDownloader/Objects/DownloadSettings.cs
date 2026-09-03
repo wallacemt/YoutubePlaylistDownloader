@@ -3,6 +3,8 @@
 [JsonObject]
 public class DownloadSettings
 {
+    public static readonly string[] AudioFormats = ["mp3", "aac", "opus", "wav", "flac", "m4a", "ogg", "webm"];
+    public static readonly string[] VideoFormats = ["mp4", "mkv"];
     [JsonProperty]
     public int SchemaVersion { get; set; } = 1;
     [JsonProperty]

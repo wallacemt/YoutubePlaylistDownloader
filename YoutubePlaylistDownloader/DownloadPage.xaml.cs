@@ -122,8 +122,9 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                 Videos.Where(video => video.Duration.Value.TotalMinutes < settings.FilterByLengthValue);
         }
 
-        var startIndex = settings.SubsetStartIndex <= 0 ? 0 : settings.SubsetStartIndex;
-        var endIndex = settings.SubsetEndIndex <= 0 ? Videos.Count() - 1 : settings.SubsetEndIndex;
+        var videoCount = Videos.Count();
+        var startIndex = videoCount == 0 ? 0 : Math.Clamp(settings.SubsetStartIndex, 0, videoCount - 1);
+        var endIndex = videoCount == 0 ? -1 : Math.Clamp(settings.SubsetEndIndex <= 0 ? videoCount - 1 : settings.SubsetEndIndex, startIndex, videoCount - 1);
 
         this.silent = silent;
 
@@ -143,29 +144,28 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
         Maximum = EndIndex - StartIndex + 1;
         DownloadedVideosProgressBar.Maximum = Maximum;
         Playlist = playlist;
-        FileType = settings.SaveFormat;
-        VideoSaveFormat = settings.VideoSaveFormat;
+        FileType = DownloadSettings.AudioFormats.Contains(settings.SaveFormat?.ToLowerInvariant()) ? settings.SaveFormat.ToLowerInvariant() : "mp3";
+        VideoSaveFormat = DownloadSettings.VideoFormats.Contains(settings.VideoSaveFormat?.ToLowerInvariant()) ? settings.VideoSaveFormat.ToLowerInvariant() : "mkv";
         DownloadedCount = 0;
         Quality = settings.Quality;
         DownloadCaptions = settings.DownloadCaptions;
         CaptionsLanguage = settings.CaptionsLanguage;
-        SavePath = string.IsNullOrWhiteSpace(savePath) ? GlobalConsts.settings.SaveDirectory : savePath;
+        var resolvedSavePath = string.IsNullOrWhiteSpace(savePath) ? GlobalConsts.settings.SaveDirectory : savePath;
 
         if (settings.SavePlaylistsInDifferentDirectories && playlist != null)
         {
             if (!string.IsNullOrWhiteSpace(playlist.Title))
             {
-                SavePath += $"\\{GlobalConsts.CleanFileName(playlist.Title)}";
+                resolvedSavePath += $"\\{GlobalConsts.CleanFileName(playlist.Title)}";
             }
             else if (!string.IsNullOrWhiteSpace(playlist.BasePlaylist?.Title))
             {
-                SavePath += $"\\{GlobalConsts.CleanFileName(playlist?.BasePlaylist?.Title)}";
+                resolvedSavePath += $"\\{GlobalConsts.CleanFileName(playlist?.BasePlaylist?.Title)}";
             }
 
         }
 
-        if (!Directory.Exists(SavePath))
-            Directory.CreateDirectory(SavePath);
+        SavePath = EnsureSaveDirectory(resolvedSavePath);
 
         AudioOnly = settings.AudioOnly;
         TagAudioFile = settings.TagAudioFile;
@@ -190,6 +190,26 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
             StartDownloading(cts.Token).ConfigureAwait(false);
 
         GlobalConsts.Downloads.Add(new QueuedDownload(this));
+    }
+
+    private static string EnsureSaveDirectory(string path)
+    {
+        var fallback = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
+        foreach (var candidate in new[] { path, fallback, GlobalConsts.TempFolderPath })
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(candidate))
+                    Directory.CreateDirectory(candidate);
+                if (Directory.Exists(candidate))
+                    return candidate;
+            }
+            catch (Exception ex) when (ex is ArgumentException or IOException or UnauthorizedAccessException or NotSupportedException)
+            {
+            }
+        }
+
+        throw new IOException("Unable to create a usable download directory.");
     }
 
     public static async Task SequenceDownload(IEnumerable<string> links, DownloadSettings settings, bool silent = false)
@@ -369,7 +389,6 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                             try
                             {
                                 var percent = Convert.ToInt32(args.StreamLength * 100 / bestQuality.Size.Bytes);
-                                CurrentProgressPercent = percent;
                                 double speedInMB = 0;
                                 var delta = sw.Elapsed - ts;
                                 ts = sw.Elapsed;
@@ -390,6 +409,7 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                                 if (percent < 100 && sw.Elapsed - lastProgressUpdate < TimeSpan.FromMilliseconds(100))
                                     return;
                                 lastProgressUpdate = sw.Elapsed;
+                                CurrentProgressPercent = percent;
 
                                 await Dispatcher.InvokeAsync(() =>
                                 {
@@ -711,7 +731,6 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                         try
                         {
                             var percent = Convert.ToInt32(args.StreamLength * 100 / bestQuality.Size.Bytes);
-                            CurrentProgressPercent = percent;
                             double speedInMB = 0;
                             var delta = sw.Elapsed - ts;
                             ts = sw.Elapsed;
@@ -731,6 +750,7 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                             if (percent < 100 && sw.Elapsed - lastProgressUpdate < TimeSpan.FromMilliseconds(100))
                                 return;
                             lastProgressUpdate = sw.Elapsed;
+                            CurrentProgressPercent = percent;
 
                             await Dispatcher.InvokeAsync(() =>
                             {

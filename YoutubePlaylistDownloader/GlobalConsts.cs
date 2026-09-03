@@ -144,7 +144,7 @@ static class GlobalConsts
     {
         try
         {
-            File.WriteAllText(ConfigFilePath, JsonConvert.SerializeObject(settings));
+            AtomicFile.WriteAllText(ConfigFilePath, JsonConvert.SerializeObject(settings));
             SaveDownloadSettings();
         }
         catch (Exception ex)
@@ -571,7 +571,7 @@ static class GlobalConsts
     {
         try
         {
-            File.WriteAllText(DownloadSettingsFilePath, JsonConvert.SerializeObject(downloadSettings));
+            AtomicFile.WriteAllText(DownloadSettingsFilePath, JsonConvert.SerializeObject(downloadSettings));
         }
         catch (Exception ex)
         {
@@ -613,8 +613,12 @@ static class GlobalConsts
     {
         downloadSettings ??= DownloadSettings;
         downloadSettings.SchemaVersion = 1;
-        downloadSettings.SaveFormat = string.IsNullOrWhiteSpace(downloadSettings.SaveFormat) ? "mp3" : downloadSettings.SaveFormat.ToLowerInvariant();
-        downloadSettings.VideoSaveFormat = string.IsNullOrWhiteSpace(downloadSettings.VideoSaveFormat) ? "mkv" : downloadSettings.VideoSaveFormat.ToLowerInvariant();
+        downloadSettings.SaveFormat = downloadSettings.SaveFormat?.ToLowerInvariant();
+        if (!DownloadSettings.AudioFormats.Contains(downloadSettings.SaveFormat))
+            downloadSettings.SaveFormat = "mp3";
+        downloadSettings.VideoSaveFormat = downloadSettings.VideoSaveFormat?.ToLowerInvariant();
+        if (!DownloadSettings.VideoFormats.Contains(downloadSettings.VideoSaveFormat))
+            downloadSettings.VideoSaveFormat = "mkv";
         downloadSettings.Bitrate = string.IsNullOrWhiteSpace(downloadSettings.Bitrate) || !downloadSettings.Bitrate.All(char.IsDigit) ? "192" : downloadSettings.Bitrate;
         downloadSettings.CaptionsLanguage = string.IsNullOrWhiteSpace(downloadSettings.CaptionsLanguage) ? "en" : downloadSettings.CaptionsLanguage;
         downloadSettings.VideoLanguage = string.IsNullOrWhiteSpace(downloadSettings.VideoLanguage) ? "default" : downloadSettings.VideoLanguage;

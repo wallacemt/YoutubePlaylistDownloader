@@ -35,5 +35,17 @@ public class AtomicFileTests : IDisposable
         Assert.False(File.Exists(destination + ".part"));
     }
 
+    [Fact]
+    public void WriteAllText_replaces_destination_without_leaving_partial_file()
+    {
+        var destination = Path.Combine(directory, "settings.json");
+        File.WriteAllText(destination, "old");
+
+        AtomicFile.WriteAllText(destination, "new");
+
+        Assert.Equal("new", File.ReadAllText(destination));
+        Assert.False(File.Exists(destination + ".part"));
+    }
+
     public void Dispose() => Directory.Delete(directory, true);
 }

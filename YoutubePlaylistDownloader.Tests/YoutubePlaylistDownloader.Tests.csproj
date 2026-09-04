@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\YoutubePlaylistDownloader\Utilities\AtomicFile.cs" Link="AtomicFile.cs" />
+    <Compile Include="..\YoutubePlaylistDownloader\Utilities\DownloadPaths.cs" Link="DownloadPaths.cs" />
   </ItemGroup>
 </Project>

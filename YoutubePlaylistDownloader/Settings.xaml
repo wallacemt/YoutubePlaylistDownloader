@@ -18,7 +18,8 @@
         </EventTrigger>
     </UserControl.Triggers>
 
-    <StackPanel>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="12" MaxWidth="900" HorizontalAlignment="Center">
         <Controls:MetroAnimatedTabControl HorizontalAlignment="Center">
             <Controls:MetroTabItem Header="{DynamicResource Settings}">
                 <StackPanel>
@@ -68,4 +69,5 @@
             <iconPacks:PackIconModern Width="40" Height="40" Kind="ArrowLeft" />
         </Controls:Tile>
     </StackPanel>
+    </ScrollViewer>
 </UserControl>

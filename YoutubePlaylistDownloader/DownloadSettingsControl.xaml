@@ -6,12 +6,22 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              FlowDirection="{DynamicResource FlowDirection}"
-             HorizontalAlignment="Center">
+             HorizontalAlignment="Stretch">
 
-    <Grid Margin="50,0">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="UserControl.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:00.25" />
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <Grid Margin="12,0" MaxWidth="1100" HorizontalAlignment="Stretch">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel>
-                <Label Content="{DynamicResource General}" Foreground="{DynamicResource MahApps.Brushes.Accent}" FontSize="26" />
+                <Label Content="{DynamicResource General}" Style="{StaticResource UiSectionHeaderStyle}" />
                 <StackPanel Margin="10,0,0,0" >
                     <StackPanel Orientation="Horizontal">
                         <Label Content="{DynamicResource SaveDirectory}" Margin="5"  />
@@ -31,7 +41,7 @@
                     </StackPanel>
                     <CheckBox x:Name="SkipExistingCheckbox" Content="{DynamicResource SkipExisting}" Margin="5" />
                 </StackPanel>
-                <Label Content="{DynamicResource Video}" Foreground="{DynamicResource MahApps.Brushes.Accent}" FontSize="26"/>
+                <Label Content="{DynamicResource Video}" Style="{StaticResource UiSectionHeaderStyle}"/>
                 <WrapPanel Orientation="Vertical" Margin="10,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="{DynamicResource SaveVideoFormat}" Margin="5"  />
@@ -53,7 +63,7 @@
                     </WrapPanel>
                 </WrapPanel>
 
-                <Label Content="{DynamicResource Audio}" Foreground="{DynamicResource MahApps.Brushes.Accent}" FontSize="26" />
+                <Label Content="{DynamicResource Audio}" Style="{StaticResource UiSectionHeaderStyle}" />
                 <StackPanel Margin="10,0,0,0">
                     <StackPanel Orientation="Horizontal" >
                         <CheckBox Content="{DynamicResource ConvertToMp3}" Margin="7" x:Name="ConvertCheckBox" HorizontalAlignment="Center" IsChecked="False" />
@@ -66,7 +76,7 @@
                     <CheckBox Margin="7" x:Name="AudioOnlyCheckBox" Content="{DynamicResource AudioOnly}" />
                 </StackPanel>
 
-                <Label Content="{DynamicResource Playlist}" Foreground="{DynamicResource MahApps.Brushes.Accent}" FontSize="26" />
+                <Label Content="{DynamicResource Playlist}" Style="{StaticResource UiSectionHeaderStyle}" />
                 <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
                     <CheckBox Content="{DynamicResource PlaylistIndex}" Margin="7" x:Name="PlaylistIndexCheckBox" />
                     <TextBox Width="25" x:Name="PlaylistStartIndexTextBox" Text="1" Margin="0,7" TextAlignment="Center"/>
@@ -75,7 +85,7 @@
                     <Label Content="{DynamicResource LeaveEmptyOrZeroForUntilTheEnd}" Margin="7" />
                 </StackPanel>
 
-                <Label Content="{DynamicResource Filter}" Foreground="{DynamicResource MahApps.Brushes.Accent}" FontSize="26" />
+                <Label Content="{DynamicResource Filter}" Style="{StaticResource UiSectionHeaderStyle}" />
                 <StackPanel Margin="10,0,0,0">
                     <StackPanel Orientation="Horizontal" >
                         <CheckBox Content="{DynamicResource DownloadFilter}" Margin="7" x:Name="FilterByLengthCheckBox" HorizontalAlignment="Center" IsChecked="False" />

@@ -5,12 +5,17 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              Margin="5"
              FlowDirection="{DynamicResource FlowDirection}">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="UserControl.Loaded">
+            <BeginStoryboard><Storyboard><DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:00.25" /></Storyboard></BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
     <StackPanel>
 
         <Controls:MetroTabControl HorizontalAlignment="Center">
 
             <Controls:MetroTabItem Header="{DynamicResource About}">
-                <RichTextBox MaxWidth="1200" Width="600" BorderThickness="0" Margin="5,0,0,0" Cursor="Arrow" IsReadOnly="True" IsReadOnlyCaretVisible="False"  >
+                <RichTextBox MaxWidth="900" Width="Auto" BorderThickness="0" Margin="5,0,0,0" Cursor="Arrow" IsReadOnly="True" IsReadOnlyCaretVisible="False"  >
                     <FlowDocument>
                         <Paragraph>
                             <Run x:Name="AboutRun" FontSize="14" Text="{DynamicResource AboutTheProgram}" />

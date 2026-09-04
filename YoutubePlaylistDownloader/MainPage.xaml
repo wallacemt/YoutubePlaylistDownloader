@@ -90,11 +90,11 @@
                             </Grid>
                             </Border>
                             <WrapPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,8">
-                                <Controls:Tile Style="{DynamicResource SmallTileStyle}" x:Name="DownloadButton" Title="{DynamicResource Download}" IsEnabled="False" MinWidth="200" Width="Auto" HorizontalTitleAlignment="Center" Click="DownloadButton_Click">
-                                    <iconPacks:PackIconModern Width="40" Height="40" Kind="ArrowDown" />
+                                <Controls:Tile Style="{DynamicResource UiActionTileStyle}" x:Name="DownloadButton" Title="{DynamicResource Download}" IsEnabled="False" MinWidth="130" Width="Auto" HorizontalTitleAlignment="Center" Click="DownloadButton_Click">
+                                    <iconPacks:PackIconModern Width="24" Height="24" Kind="ArrowDown" />
                                 </Controls:Tile>
-                                <Controls:Tile Style="{DynamicResource SmallTileStyle}" x:Name="DownloadInBackgroundButton" Title="{DynamicResource DownloadInBackground}" MinWidth="200" Width="Auto" HorizontalTitleAlignment="Center" IsEnabled="False" Click="DownloadInBackgroundButton_Click">
-                                    <iconPacks:PackIconModern Width="40" Height="40" Kind="Reset" />
+                                <Controls:Tile Style="{DynamicResource UiActionTileStyle}" x:Name="DownloadInBackgroundButton" Title="{DynamicResource DownloadInBackground}" MinWidth="130" Width="Auto" HorizontalTitleAlignment="Center" IsEnabled="False" Click="DownloadInBackgroundButton_Click">
+                                    <iconPacks:PackIconModern Width="24" Height="24" Kind="Reset" />
                                 </Controls:Tile>
                             </WrapPanel>
                         </Grid>
@@ -123,8 +123,8 @@
                         </Border>
                     </ScrollViewer>
                     <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
-                        <Controls:Tile Style="{DynamicResource SmallTileStyle}" x:Name="BulkDownloadButton" Title="{DynamicResource Download}" MinWidth="200" Width="Auto" HorizontalTitleAlignment="Center" IsEnabled="False" Click="BulkDownloadButton_Click">
-                            <iconPacks:PackIconModern Width="40" Height="40" Kind="ArrowDown" />
+                        <Controls:Tile Style="{DynamicResource UiActionTileStyle}" x:Name="BulkDownloadButton" Title="{DynamicResource Download}" MinWidth="130" Width="Auto" HorizontalTitleAlignment="Center" IsEnabled="False" Click="BulkDownloadButton_Click">
+                            <iconPacks:PackIconModern Width="24" Height="24" Kind="ArrowDown" />
                         </Controls:Tile>
                     </WrapPanel>
                 </Grid>

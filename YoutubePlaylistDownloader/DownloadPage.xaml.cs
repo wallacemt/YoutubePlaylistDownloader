@@ -350,13 +350,14 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                     }
                     var cleanFileNameWithID = GlobalConsts.CleanFileName(video.Title + video.Id);
                     var cleanFileName = GlobalConsts.CleanFileName(downloadSettings.GetFilenameByPattern(video, i, title, Playlist));
-                    var fileLoc = $"{GlobalConsts.TempFolderPath}{cleanFileNameWithID}.part";
-
                     if (AudioOnly)
                         FileType = bestQuality.Container.Name;
 
-                    var outputFileLoc = $"{GlobalConsts.TempFolderPath}{cleanFileNameWithID}.part.{FileType}";
-                    var copyFileLoc = $"{SavePath}\\{cleanFileName}.{FileType}";
+                    var paths = DownloadPaths.Create(GlobalConsts.TempFolderPath, cleanFileNameWithID, FileType)
+                        .WithDestination($"{SavePath}\\{cleanFileName}.{FileType}");
+                    var fileLoc = paths.Input;
+                    var outputFileLoc = paths.Output;
+                    var copyFileLoc = paths.Destination;
 
                     if (GlobalConsts.DownloadSettings.SkipExisting && File.Exists(copyFileLoc))
                     {
@@ -692,11 +693,13 @@ public partial class DownloadPage : UserControl, IDisposable, IDownload
                 }
                 var cleanVideoNameWithId = GlobalConsts.CleanFileName(video.Title + video.Id);
                 var cleanVideoName = GlobalConsts.CleanFileName(downloadSettings.GetFilenameByPattern(video, i, title, Playlist));
-                var fileLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}.part";
-                var outputFileLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}.part.{VideoSaveFormat}";
-                var copyFileLoc = $"{SavePath}\\{cleanVideoName}.{VideoSaveFormat}";
-                var audioLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}-audio.{bestAudio.Container.Name}.part";
-                var captionsLoc = $"{GlobalConsts.TempFolderPath}{cleanVideoNameWithId}.srt.part";
+                var paths = DownloadPaths.Create(GlobalConsts.TempFolderPath, cleanVideoNameWithId, VideoSaveFormat, bestAudio.Container.Name)
+                    .WithDestination($"{SavePath}\\{cleanVideoName}.{VideoSaveFormat}");
+                var fileLoc = paths.Input;
+                var outputFileLoc = paths.Output;
+                var copyFileLoc = paths.Destination;
+                var audioLoc = paths.Audio;
+                var captionsLoc = paths.Captions;
 
                 if (GlobalConsts.DownloadSettings.SkipExisting && File.Exists(copyFileLoc))
                 {

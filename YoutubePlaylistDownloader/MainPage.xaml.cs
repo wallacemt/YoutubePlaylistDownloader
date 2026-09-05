@@ -167,8 +167,30 @@ public partial class MainPage : UserControl
 
             DownloadButton.IsEnabled = downloadEnabled;
             DownloadInBackgroundButton.IsEnabled = downloadEnabled;
+            DownloadVideoButton.IsEnabled = downloadEnabled;
+            DownloadAudioButton.IsEnabled = downloadEnabled;
 
         });
+
+    private void DownloadVideoButton_Click(object sender, RoutedEventArgs e)
+        => StartQuickDownload(audioOnly: false);
+
+    private void DownloadAudioButton_Click(object sender, RoutedEventArgs e)
+        => StartQuickDownload(audioOnly: true);
+
+    private void StartQuickDownload(bool audioOnly)
+    {
+        var previousAudioOnly = GlobalConsts.DownloadSettings.AudioOnly;
+        try
+        {
+            GlobalConsts.DownloadSettings.AudioOnly = audioOnly;
+            DownloadButton_Click(this, new RoutedEventArgs());
+        }
+        finally
+        {
+            GlobalConsts.DownloadSettings.AudioOnly = previousAudioOnly;
+        }
+    }
 
     private void DownloadInBackgroundButton_Click(object sender, RoutedEventArgs e)
     {

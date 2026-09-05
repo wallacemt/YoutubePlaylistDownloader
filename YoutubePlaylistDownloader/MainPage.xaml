@@ -56,7 +56,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Border Grid.Row="0" Visibility="Collapsed" x:Name="PlaylistInfoGrid" Style="{StaticResource UiCardStyle}" HorizontalAlignment="Stretch" MaxHeight="410">
+                            <Border Grid.Row="0" Visibility="Collapsed" x:Name="PlaylistInfoGrid" Style="{StaticResource UiFadeInStyle}" HorizontalAlignment="Stretch" MaxHeight="410" Padding="16" Margin="8">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -90,6 +90,12 @@
                             </Grid>
                             </Border>
                             <WrapPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,8">
+                                <Controls:Tile Style="{DynamicResource UiActionTileStyle}" x:Name="DownloadVideoButton" Title="{DynamicResource Video}" IsEnabled="False" MinWidth="130" Width="Auto" HorizontalTitleAlignment="Center" Click="DownloadVideoButton_Click">
+                                    <iconPacks:PackIconModern Width="22" Height="22" Kind="Video" />
+                                </Controls:Tile>
+                                <Controls:Tile Style="{DynamicResource UiActionTileStyle}" x:Name="DownloadAudioButton" Title="{DynamicResource Audio}" IsEnabled="False" MinWidth="130" Width="Auto" HorizontalTitleAlignment="Center" Click="DownloadAudioButton_Click">
+                                    <iconPacks:PackIconModern Width="22" Height="22" Kind="MusicNote" />
+                                </Controls:Tile>
                                 <Controls:Tile Style="{DynamicResource UiActionTileStyle}" x:Name="DownloadButton" Title="{DynamicResource Download}" IsEnabled="False" MinWidth="130" Width="Auto" HorizontalTitleAlignment="Center" Click="DownloadButton_Click">
                                     <iconPacks:PackIconModern Width="24" Height="24" Kind="ArrowDown" />
                                 </Controls:Tile>

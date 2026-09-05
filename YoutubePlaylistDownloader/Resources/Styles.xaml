@@ -122,10 +122,11 @@
     </Style>
 
     <Style x:Key="UiActionTileStyle" TargetType="Controls:Tile">
-        <Setter Property="Height" Value="46" />
+        <Setter Property="Height" Value="60" />
         <Setter Property="MinWidth" Value="130" />
         <Setter Property="Width" Value="Auto" />
-        <Setter Property="TitleFontSize" Value="14" />
+        <Setter Property="TitleFontSize" Value="13" />
+        <Setter Property="Padding" Value="8,4" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent}" />
         <Setter Property="BorderThickness" Value="0" />
@@ -139,6 +140,21 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="3" />
+    </Style>
+
+    <Style x:Key="UiFadeInStyle" TargetType="Border">
+        <Setter Property="Opacity" Value="1" />
+        <Style.Triggers>
+            <Trigger Property="Visibility" Value="Visible">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:00.22" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">

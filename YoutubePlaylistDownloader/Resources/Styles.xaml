@@ -157,9 +157,4 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-        <Setter Property="MinHeight" Value="34" />
-        <Setter Property="Margin" Value="4" />
-    </Style>
-
 </ResourceDictionary>

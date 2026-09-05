@@ -94,7 +94,7 @@
                                     <iconPacks:PackIconModern Width="22" Height="22" Kind="Video" />
                                 </Controls:Tile>
                                 <Controls:Tile Style="{DynamicResource UiActionTileStyle}" x:Name="DownloadAudioButton" Title="{DynamicResource Audio}" IsEnabled="False" MinWidth="130" Width="Auto" HorizontalTitleAlignment="Center" Click="DownloadAudioButton_Click">
-                                    <iconPacks:PackIconModern Width="22" Height="22" Kind="MusicNote" />
+                                    <iconPacks:PackIconModern Width="22" Height="22" Kind="Music" />
                                 </Controls:Tile>
                                 <Controls:Tile Style="{DynamicResource UiActionTileStyle}" x:Name="DownloadButton" Title="{DynamicResource Download}" IsEnabled="False" MinWidth="130" Width="Auto" HorizontalTitleAlignment="Center" Click="DownloadButton_Click">
                                     <iconPacks:PackIconModern Width="24" Height="24" Kind="ArrowDown" />

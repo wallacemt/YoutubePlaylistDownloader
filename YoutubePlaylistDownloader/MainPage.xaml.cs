@@ -165,7 +165,6 @@ public partial class MainPage : UserControl
                 PlaylistTotalVideosTextBlock.Visibility = Visibility.Collapsed;
             }
 
-            DownloadButton.IsEnabled = downloadEnabled;
             DownloadInBackgroundButton.IsEnabled = downloadEnabled;
             DownloadVideoButton.IsEnabled = downloadEnabled;
             DownloadAudioButton.IsEnabled = downloadEnabled;
@@ -173,23 +172,14 @@ public partial class MainPage : UserControl
         });
 
     private void DownloadVideoButton_Click(object sender, RoutedEventArgs e)
-        => StartQuickDownload(audioOnly: false);
+        => OpenDownloadOptions(audioOnly: false);
 
     private void DownloadAudioButton_Click(object sender, RoutedEventArgs e)
-        => StartQuickDownload(audioOnly: true);
+        => OpenDownloadOptions(audioOnly: true);
 
-    private void StartQuickDownload(bool audioOnly)
+    private static void OpenDownloadOptions(bool audioOnly)
     {
-        var previousAudioOnly = GlobalConsts.DownloadSettings.AudioOnly;
-        try
-        {
-            GlobalConsts.DownloadSettings.AudioOnly = audioOnly;
-            DownloadButton_Click(this, new RoutedEventArgs());
-        }
-        finally
-        {
-            GlobalConsts.DownloadSettings.AudioOnly = previousAudioOnly;
-        }
+        GlobalConsts.LoadFlyoutPage(new DownloadSettingsControl(audioOnly));
     }
 
     private void DownloadInBackgroundButton_Click(object sender, RoutedEventArgs e)

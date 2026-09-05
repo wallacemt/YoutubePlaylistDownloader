@@ -28,9 +28,18 @@ public partial class DownloadSettingsControl : UserControl
 
     public Dictionary<string, VideoQuality> Resolutions1 => Resolutions;
 
-    public DownloadSettingsControl()
+    public DownloadSettingsControl(bool? audioOnly = null)
     {
         InitializeComponent();
+
+        if (audioOnly.HasValue)
+        {
+            GlobalConsts.DownloadSettings.AudioOnly = audioOnly.Value;
+            VideoOptionsHeader.Visibility = audioOnly.Value ? Visibility.Collapsed : Visibility.Visible;
+            VideoOptionsPanel.Visibility = audioOnly.Value ? Visibility.Collapsed : Visibility.Visible;
+            AudioOptionsHeader.Visibility = audioOnly.Value ? Visibility.Visible : Visibility.Collapsed;
+            AudioOptionsPanel.Visibility = audioOnly.Value ? Visibility.Visible : Visibility.Collapsed;
+        }
 
         ResulotionDropDown.ItemsSource = Resolutions.Keys;
         SaveVideosFormatDropDown.ItemsSource = VideoFileTypes;

@@ -41,8 +41,8 @@
                     </StackPanel>
                     <CheckBox x:Name="SkipExistingCheckbox" Content="{DynamicResource SkipExisting}" Margin="5" />
                 </StackPanel>
-                <Label Content="{DynamicResource Video}" Style="{StaticResource UiSectionHeaderStyle}"/>
-                <WrapPanel Orientation="Vertical" Margin="10,0,0,0">
+                <Label x:Name="VideoOptionsHeader" Content="{DynamicResource Video}" Style="{StaticResource UiSectionHeaderStyle}"/>
+                <WrapPanel x:Name="VideoOptionsPanel" Orientation="Vertical" Margin="10,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="{DynamicResource SaveVideoFormat}" Margin="5"  />
                         <ComboBox HorizontalContentAlignment="Left" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="Auto" x:Name="SaveVideosFormatDropDown" VerticalAlignment="Center"/>
@@ -63,8 +63,8 @@
                     </WrapPanel>
                 </WrapPanel>
 
-                <Label Content="{DynamicResource Audio}" Style="{StaticResource UiSectionHeaderStyle}" />
-                <StackPanel Margin="10,0,0,0">
+                <Label x:Name="AudioOptionsHeader" Content="{DynamicResource Audio}" Style="{StaticResource UiSectionHeaderStyle}" />
+                <StackPanel x:Name="AudioOptionsPanel" Margin="10,0,0,0">
                     <StackPanel Orientation="Horizontal" >
                         <CheckBox Content="{DynamicResource ConvertToMp3}" Margin="7" x:Name="ConvertCheckBox" HorizontalAlignment="Center" IsChecked="False" />
                         <ComboBox HorizontalContentAlignment="Left" HorizontalAlignment="Center" VerticalContentAlignment="Center" Width="Auto" x:Name="ExtensionsDropDown" VerticalAlignment="Center"/>
